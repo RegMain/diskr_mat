@@ -18,10 +18,6 @@ void stack_push(stack_t **stack, char value) {
   }
 }
 
-char stack_top(stack_t **stack) {
-  return (*stack)->value;
-}
-
 char stack_pop(stack_t **stack) {
   stack_t *temp;
   char pop_value;
@@ -36,3 +32,7 @@ int stack_is_empty(stack_t **stack) {
   return ((*stack) == NULL);
 }
 
+char stack_top(stack_t **stack) {
+  if (stack_is_empty(stack)) return 0;
+  return (*stack)->value;
+}
