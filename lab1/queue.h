@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 struct queue_node {
-  short value;
+  char value;
   struct queue_node *next;
 };
 
@@ -34,12 +34,12 @@ int queue_is_empty(queue_t queue) {
   return (queue.start == NULL);
 }
 
-short queue_top(queue_t queue) {
+char queue_top(queue_t queue) {
   if (queue_is_empty(queue)) return 0;
   return queue.start->value;
 }
 
-short queue_pop(queue_t queue) {
+char queue_pop(queue_t queue) {
   if (queue_is_empty(queue)) return 0;
   short pop_value = queue_top(queue);
   queue_node *temp = queue.start;
