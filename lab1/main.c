@@ -1,80 +1,40 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include "stack.h"
 #include "queue.h"
 
-/*
-  [!] -> 0
-  [+] -> 1
-  [*] -> 2
-  [^] -> 3
-  [=] -> 4
-  [->] -> 5
-  [!->] -> 6
-  [!+] -> 7
-  [!*] -> 8
-*/
-
-short get_opcode(char *op) {
-  if (!strcmp(op, "!")) {
-    return 0;
-  }
-  if (!strcmp(op, "+")) {
-    return 1;
-  }
-  if (!strcmp(op, "*")) {
-    return 2;
-  }
-  if (!strcmp(op, "^")) {
-    return 3;
-  }
-  if (!strcmp(op, "=")) {
-    return 4;
-  }
-  if (!strcmp(op, "->")) {
-    return 5;
-  }
-  if (!strcmp(op, "!->")) {
-    return 6;
-  }
-  if (!strcmp(op, "!+")) {
-    return 7;
-  }
-  if (!strcmp(op, "!*")) {
-    return 8;
-  }
-  return -1;
+int is_higher_priority(char *a, char *b) {
+  
 }
 
-short perform_operation(char *op, short a, short b) {
-  short opcode = get_opcode(op);
-  switch (opcode) {
-    case 0:
-      return (!a);
-    case 1:
-      return (a || b);
-    case 2:
-      return (a && b);
-    case 3:
-      return (a ^ b);
-    case 4:
-      return !(a ^ b);
-    case 5:
-      return (a <= b);
-    case 6:
-      return (a > b);
-    case 7:
-      return !(a || b);
-    case 8:
-      return !(a && b);
+queue_t validate_formula(FILE *file) {
+  stack_t *stack;
+  queue_t queue;
+  char type;
+  char *tmp;
+  while (!feof(file)) {
+    fscanf(file, "%c", &type);
+    switch (type) {
+    case '$':
+      fscanf(file, "%c", tmp);
+      queue_push(queue, *tmp);
+      break;
+    case '#':
+      fscanf(file, "%s", tmp);
+      if (stack_is_empty(&stack) || !strcmp(stack_top(&stack), "(")) {
+        stack_push(&stack, tmp);    
+      } else if (is_higher_priority(tmp, stack_top(&stack))) {
+        
+      }
     default:
-      return -1;
+      break;
+    }
   }
+  return queue;
 }
 
-int compute_formula(stack_t *formula, int values) {
+int compute_formula(queue_t formula, int values) {
   return 1;
   // TODO
 }
@@ -104,7 +64,7 @@ void print_table(FILE *file) {
     }
   }
   printf(" Result\n");
-  stack_t *formula;
+  queue_t formula = validate_formula(file);
   for (int i = 0; i < (1 << symbols_cnt); ++i) {
     for (int j = 1; j <= symbols_cnt; ++j) {
       printf(" %d |", (i >> (symbols_cnt - j)) & 1);

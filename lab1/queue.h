@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 struct queue_node {
-  char *value;
+  char value;
   struct queue_node *next;
 };
 
@@ -15,7 +15,7 @@ struct queue_t {
 
 typedef struct queue_t queue_t;
 
-void queue_push(queue_t queue, char* value) {
+void queue_push(queue_t queue, char value) {
   queue_node *ptr;
   ptr = malloc(sizeof(queue_node));
   ptr->next = NULL;
@@ -34,14 +34,14 @@ int queue_is_empty(queue_t queue) {
   return (queue.start == NULL);
 }
 
-char* queue_top(queue_t queue) {
+char queue_top(queue_t queue) {
   if (queue_is_empty(queue)) return 0;
   return queue.start->value;
 }
 
-char* queue_pop(queue_t queue) {
+char queue_pop(queue_t queue) {
   if (queue_is_empty(queue)) return 0;
-  char* pop_value = queue_top(queue);
+  char pop_value = queue_top(queue);
   queue_node *temp = queue.start;
   queue.start = queue.start->next;
   free(temp);
