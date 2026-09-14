@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
+#include "stack.h"
+#include "queue.h"
 
 /*
   [!] -> 0
@@ -71,7 +74,28 @@ short perform_operation(char *op, short a, short b) {
   }
 }
 
-void print_table(FILE **file) {
+int compute_formula(stack_t *formula, int values) {
+  // TODO
+}
+
+void print_table(FILE *file) {
+  char tmp;
+  char *symbols = "00000000000000000000000000";
+  FILE *cycle_ptr = &(*file);
+  while (!feof(cycle_ptr)) {
+    fscanf(cycle_ptr, "%c", &tmp);
+    if (isalpha(tmp)) {
+      tmp = toupper(tmp);
+      symbols[tmp-'a'] = '1';
+    }
+  }
+  cycle_ptr = &(*file);
+  for (int i = 0; i < 26; ++i) {
+    if (symbols[i] == '1') {
+      printf(" %c |", i+'A');
+    }
+  }
+  printf(" Result\n");
   // TODO
 }
 
@@ -84,7 +108,7 @@ int main(int argc, char *argv[]) {
     if (file == NULL) {
       printf("File could not be opened\n");
     } else {
-      print_table(&file);
+      print_table(file);
     }
     fclose(file);
   }
