@@ -75,28 +75,42 @@ short perform_operation(char *op, short a, short b) {
 }
 
 int compute_formula(stack_t *formula, int values) {
+  return 1;
   // TODO
 }
 
 void print_table(FILE *file) {
   char tmp;
-  char *symbols = "00000000000000000000000000";
-  FILE *cycle_ptr = &(*file);
-  while (!feof(cycle_ptr)) {
-    fscanf(cycle_ptr, "%c", &tmp);
+  char symbols[] = "00000000000000000000000000";
+  short symbols_cnt = 0;
+  while (!feof(file)) {
+    fscanf(file, "%c", &tmp);
     if (isalpha(tmp)) {
       tmp = toupper(tmp);
-      symbols[tmp-'a'] = '1';
+      if (symbols[tmp-'A'] == '0') {
+        symbols[tmp-'A'] = '1';
+        symbols_cnt++;
+      }
     }
   }
-  cycle_ptr = &(*file);
+  rewind(file);
+  if (symbols_cnt == 0) {
+    printf("No variables were found\n");
+    return;
+  }
   for (int i = 0; i < 26; ++i) {
     if (symbols[i] == '1') {
       printf(" %c |", i+'A');
     }
   }
   printf(" Result\n");
-  // TODO
+  stack_t *formula;
+  for (int i = 0; i < (1 << symbols_cnt); ++i) {
+    for (int j = 1; j <= symbols_cnt; ++j) {
+      printf(" %d |", (i >> (symbols_cnt - j)) & 1);
+    }
+    printf(" %d\n", compute_formula(formula, i));
+  }
 }
 
 int main(int argc, char *argv[]) {
@@ -109,8 +123,8 @@ int main(int argc, char *argv[]) {
       printf("File could not be opened\n");
     } else {
       print_table(file);
+      fclose(file);
     }
-    fclose(file);
   }
   return 0;
 }

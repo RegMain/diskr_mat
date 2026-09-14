@@ -6,14 +6,14 @@ struct queue_node {
   struct queue_node *next;
 };
 
-typedef queue_node queue_node;
+typedef struct queue_node queue_node;
 
 struct queue_t {
   queue_node *start;
   queue_node *end;
 };
 
-typedef queue_t queue_t;
+typedef struct queue_t queue_t;
 
 void queue_push(queue_t queue, short value) {
   queue_node *ptr;
