@@ -2,13 +2,13 @@
 #include <stdio.h>
 
 struct stack_node {
-  char *value;
+  int value;
   struct stack_node *next;
 };
 
 typedef struct stack_node stack_t;
 
-void stack_push(stack_t **stack, char *value) {
+void stack_push(stack_t **stack, int value) {
   stack_t *ptr;
   ptr = malloc(sizeof(stack_t));
   if (ptr != NULL) {
@@ -18,10 +18,10 @@ void stack_push(stack_t **stack, char *value) {
   }
 }
 
-char* stack_pop(stack_t **stack) {
-  if (!stack) return NULL;
+int stack_pop(stack_t **stack) {
+  if (!stack) return -1;
   stack_t *temp;
-  char *pop_value;
+  int pop_value;
   temp = *stack;
   pop_value = (*stack)->value;
   *stack = (*stack)->next;
@@ -33,32 +33,7 @@ int stack_is_empty(stack_t *stack) {
   return (stack == NULL);
 }
 
-char* stack_top(stack_t *stack) {
-  if (stack_is_empty(stack)) return 0;
+int stack_top(stack_t *stack) {
+  if (stack_is_empty(stack)) return -1;
   return (stack->value);
-}
-
-stack_t* stack_copy(stack_t *stack) {
-  if (stack == NULL) return NULL;
-  stack_t *start = NULL;
-  stack_t **end = &start;
-  while (stack != NULL) {
-    stack_t *node = malloc(sizeof(stack_t));
-    node->value = stack->value;
-    node->next = NULL;
-    *end = node;
-    end = &(node->next);
-    stack = stack->next;
-  }
-  return start;
-}
-
-void stack_free(stack_t **stack) {
-  if (*stack == NULL) return;
-  stack_t *node = *stack;
-  while (node != NULL) {
-    stack_t *tmp = node;
-    node = node->next;
-    free(tmp);
-  }
 }

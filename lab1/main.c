@@ -4,86 +4,6 @@
 #include <ctype.h>
 #include "stack.h"
 
-short check_priority(char *op) {
-  if (!strcmp(op, "!")) return 6;
-  if (!strcmp(op, "*") || !strcmp(op, "!*")) return 5;
-  if (!strcmp(op, "^")) return 4;
-  if (!strcmp(op, "+") || !strcmp(op, "!+")) return 3;
-  if (!strcmp(op, "->") || !strcmp(op, "!->")) return 2;
-  if (!strcmp(op, "!^")) return 1;
-  return 0;
-}
-
-int is_operator(char *ch) {
-  return check_priority(ch);
-} 
-
-stack_t* formula_to_postfix(FILE *file) {
-  stack_t *stack = NULL;
-  stack_t *result = NULL;
-  // TODO
-  while (!feof(file)) {
-    // Их нужно поправить
-    int type = fgetc(file);
-    int tmp;
-    switch (type) {
-    case '$':
-      char *token_ch = malloc(2);
-      tmp = fgetc(file);
-      token_ch[0] = tmp;
-      token_ch[1] = '\0';
-      stack_push(&result, token_ch);
-      break;
-    case '[': {
-      int i;
-      char *token_op = malloc(4);
-      tmp = fgetc(file);
-      for (i = 0; !feof(file) && tmp != ']' && (i < 3); ++i) {
-        token_op[i] = tmp;
-        tmp = fgetc(file);
-      }
-      token_op[i] = '\0';
-      while (!stack_is_empty(stack)
-            && ((check_priority(stack_top(stack)) >= check_priority(token_op)))) {
-        stack_push(&result, stack_pop(&stack));
-      }
-      stack_push(&stack, token_op);
-      break;
-    }
-    case '(':
-      char *token_br = malloc(2);
-      token_br[0] = '(';
-      token_br[1] = '\0';
-      stack_push(&stack, token_br);
-      break;
-    case ')':
-      while (!stack_is_empty(stack) && strcmp(stack_top(stack), "(")) {
-        stack_push(&result, stack_pop(&stack));
-      }
-      if (!stack_is_empty(stack) && !strcmp(stack_top(stack),"(")) {
-        char *to_free = stack_pop(&stack);
-        free(to_free);
-      }
-      break;
-    default:
-      break;
-    }
-  }
-
-  while (!stack_is_empty(stack)) {
-    stack_push(&result, stack_pop(&stack));
-  }
-
-  stack_t *formula = NULL;
-  while (!stack_is_empty(result)) {
-    stack_push(&formula, stack_pop(&result));
-  }
-  return formula;
-}
-
-int symbol_to_value(char symbol, char values[]) {
-  
-}
 
 /*
   [!] -> 0
@@ -128,8 +48,89 @@ short get_opcode(char *op) {
   return -1;
 }
 
-char* perform_operation(char *op, int a, int b) {
-  short opcode = get_opcode(op);
+int is_operator(char op) {
+  return (op < 9 && op >= 0);
+}
+
+short check_priority(int op) {
+  switch (op) {
+    case 0: return 6;
+    case 1: return 3;
+    case 2: return 5;
+    case 3: return 4;
+    case 4: return 1;
+    case 5: return 2;
+    case 6: return 2;
+    case 7: return 3;
+    case 8: return 5;
+    default: return 0;
+  }
+}
+
+stack_t* formula_to_postfix(FILE *file) {
+  stack_t *stack = NULL;
+  stack_t *result = NULL;
+  // TODO
+  while (!feof(file)) {
+    int type = fgetc(file);
+    int tmp;
+    switch (type) {
+      case '$':
+        tmp = fgetc(file);
+        stack_push(&result, tmp);
+        break;
+      case '[': {
+        int i;
+        char token_op[4];
+        tmp = fgetc(file);
+        for (i = 0; !feof(file) && tmp != ']' && (i < 3); ++i) {
+          token_op[i] = tmp;
+          tmp = fgetc(file);
+        }
+        token_op[i] = '\0';
+        while (!stack_is_empty(stack)
+              && (stack_top(stack) != 0
+                  ? (check_priority(stack_top(stack)) >= check_priority(get_opcode(token_op)))
+                  : (check_priority(stack_top(stack)) > check_priority(get_opcode(token_op))))) {
+          stack_push(&result, stack_pop(&stack));
+        }
+        stack_push(&stack, get_opcode(token_op));
+        break;
+      }
+      case '(':
+        stack_push(&stack, '(');
+        break;
+      case ')':
+        while (!stack_is_empty(stack) && stack_top(stack) != '(') {
+          stack_push(&result, stack_pop(&stack));
+        }
+        if (!stack_is_empty(stack) && stack_top(stack) == '(') {
+          stack_pop(&stack);
+        }
+        break;
+      default:
+        break;
+    }
+  }
+
+  while (!stack_is_empty(stack)) {
+    stack_push(&result, stack_pop(&stack));
+  }
+
+  stack_t *formula = NULL;
+  while (!stack_is_empty(result)) {
+    stack_push(&formula, stack_pop(&result));
+  }
+  return formula;
+}
+
+int symbol_to_value(char symbol, char values[]) {
+  if (symbol == '0' || symbol == '1') return (symbol - '0');
+  symbol = toupper(symbol);
+  return (values[symbol - 'A'] - '0');
+}
+
+char perform_operation(int opcode, int a, int b) {
   switch (opcode) {
     case 0:
       return (!a);
@@ -149,33 +150,40 @@ char* perform_operation(char *op, int a, int b) {
       return !(a || b);
     case 8:
       return !(a && b);
+  }
 }
 
 int compute_formula(stack_t *formula, int values, char symbols[]) {
-  char symbols_with_values[26];
+  char symbols_with_values[27];
   strcpy(symbols_with_values, symbols);
-  for (int i = 26; i >= 0; --i) {
+  for (int i = 25; i >= 0; --i) {
     if (symbols_with_values[i] - '0') {
       symbols_with_values[i] = '0' + (values % 2);
       values /= 2;
     }
   }
-  stack_t *stack = stack_copy(formula);
   stack_t *expression = NULL;
-  while (!stack_is_empty(stack)) {
-    if (!is_operator(stack_top(stack))) {
-      stack_push(&expression, stack_pop(&stack));
+  stack_t *formula_ptr = formula;
+  while (formula_ptr != NULL) {
+    if (!is_operator(stack_top(formula_ptr))) {
+      stack_push(&expression, formula_ptr->value);
     } else {
-      char op1 = stack_pop(&expression)[0];
+      char op1 = stack_pop(&expression);
       char op2 = 0;
-      if (!strcmp(stack_top(stack), "!")) {
-        char op2 = stack_pop(&expression)[0]; 
+      if (formula_ptr->value != 0) {
+        op2 = stack_pop(&expression); 
+        int op1_value = symbol_to_value(op1, symbols_with_values);
+        int op2_value = symbol_to_value(op2, symbols_with_values);
+        stack_push(&expression, perform_operation(formula_ptr->value, op2_value, op1_value)+'0');
+      } else {
+        int op1_value = symbol_to_value(op1, symbols_with_values);
+        stack_push(&expression, perform_operation(formula_ptr->value, op1_value, 0)+'0');
       }
-      int op1_value
-      stack_push(&expression, perform_operation(stack_top(stack), op1, op2));
     }
+    formula_ptr = formula_ptr->next;
   }
-  stack_free(&stack);
+  if (stack_is_empty(expression)) return -1;
+  return symbol_to_value(stack_top(expression), symbols_with_values) + '0';
 }
 
 void print_table(FILE *file) {
@@ -212,7 +220,7 @@ void print_table(FILE *file) {
     for (int j = 1; j <= symbols_cnt; ++j) {
       printf(" %d |", (i >> (symbols_cnt - j)) & 1);
     }
-    printf(" %d\n", compute_formula(formula, i, symbols));
+    printf(" %c\n", compute_formula(formula, i, symbols));
   }
 }
 
@@ -225,7 +233,7 @@ int main(int argc, char *argv[]) {
     if (file == NULL) {
       printf("File could not be opened\n");
     } else {
-      //print_table(file);
+      print_table(file);
       fclose(file);
     }
   }
