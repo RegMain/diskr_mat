@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include "formula.c"
 #include "table.c"
 #include "pf.c"
 
@@ -27,7 +28,8 @@ int main(int argc, char *argv[]) {
     if (file == NULL) {
       printf("File could not be opened\n");
     } else {
-      stack_t *formula = print_table(file);
+      stack_t *formula = formula_to_postfix(file);
+      print_table(file);
       if (pdnf_flag) pdnf(file, formula);
       if (pcnf_flag) pcnf(file, formula);
       fclose(file);

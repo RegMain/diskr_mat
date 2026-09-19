@@ -146,6 +146,8 @@ stack_t* formula_to_postfix(FILE *file) {
     }
   }
 
+  rewind(file);
+
   while (!stack_is_empty(stack)) {
     stack_push(&result, stack_pop(&stack));
   }

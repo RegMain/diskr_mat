@@ -2,7 +2,7 @@
 
 #include "formula.c"
 
-stack_t* print_table(FILE *file) {
+void print_table(FILE *file) {
   char tmp;
   char symbols[] = "00000000000000000000000000"; // Is there symbol ABC...Z?
   short symbols_cnt = 0;
@@ -21,7 +21,7 @@ stack_t* print_table(FILE *file) {
   rewind(file);
   if (symbols_cnt == 0) {
     printf("The result of formula is always %c\n", compute_formula(formula, 0, symbols));
-    return formula;
+    return;
   }
   // Printing the header
   for (int i = 0; i < 26; ++i) {
@@ -39,5 +39,4 @@ stack_t* print_table(FILE *file) {
     }
     printf(" %c\n", compute_formula(formula, i, symbols));
   }
-  return formula;
 }
