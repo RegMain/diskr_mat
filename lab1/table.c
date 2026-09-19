@@ -2,7 +2,7 @@
 
 #include "formula.c"
 
-void print_table(FILE *file) {
+void print_table(FILE *file, stack_t *formula) {
   char tmp;
   char symbols[] = "00000000000000000000000000"; // Is there symbol ABC...Z?
   short symbols_cnt = 0;
@@ -16,8 +16,6 @@ void print_table(FILE *file) {
       }
     }
   }
-  rewind(file);
-  stack_t *formula = formula_to_postfix(file);
   rewind(file);
   if (symbols_cnt == 0) {
     printf("The result of formula is always %c\n", compute_formula(formula, 0, symbols));

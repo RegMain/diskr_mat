@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
       printf("File could not be opened\n");
     } else {
       stack_t *formula = formula_to_postfix(file);
-      print_table(file);
+      print_table(file, formula);
       if (pdnf_flag) pdnf(file, formula);
       if (pcnf_flag) pcnf(file, formula);
       fclose(file);
