@@ -19,7 +19,7 @@ void stack_push(stack_t **stack, int value) {
 }
 
 int stack_pop(stack_t **stack) {
-  if (!stack) return -1;
+  if (!stack || !*stack) return -1;
   stack_t *temp;
   int pop_value;
   temp = *stack;
