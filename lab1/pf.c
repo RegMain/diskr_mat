@@ -29,17 +29,17 @@ void pdnf(FILE *file, stack_t *formula) {
         printf(" [+] ");
       }
       int cnt = 0;
-      int index = 0;
       for (int j = 1; j <= symbols_cnt; ++j) {
         for (int k = cnt; k < 26; ++k) {
-          cnt += (symbols[k] == '1');
-          ++index;
-          if (cnt == j) break;
+          if (symbols[k] - '0') {
+            cnt = k + 1;
+            break;
+          }
         }
         if (!((i >> (symbols_cnt - j)) & 1)) {
            printf("[!]");
         }
-        printf("$%c", 'A' + index - 1);
+        printf("$%c", 'A' + cnt - 1);
         if (j != symbols_cnt) {
           printf(" [*] ");
         }
@@ -80,17 +80,17 @@ void pcnf(FILE *file, stack_t *formula) {
       }
       printf("(");
       int cnt = 0;
-      int index = 0;
       for (int j = 1; j <= symbols_cnt; ++j) {
         for (int k = cnt; k < 26; ++k) {
-          cnt += (symbols[k] == '1');
-          ++index;
-          if (cnt == j) break;
+          if (symbols[k] - '0') {
+            cnt = k + 1;
+            break;
+          }
         }
         if ((i >> (symbols_cnt - j)) & 1) {
            printf("[!]");
         }
-        printf("$%c", 'A' + index - 1);
+        printf("$%c", 'A' + cnt - 1);
         if (j != symbols_cnt) {
           printf(" [+] ");
         } else {
