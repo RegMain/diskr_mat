@@ -193,5 +193,5 @@ int compute_formula(stack_t *formula, int values, char symbols[]) {
   }
   if (stack_is_empty(expression)) return -1;
   // This is needed because of case when no operations are in formula
-  return symbol_to_value(stack_top(expression), symbols_with_values) + '0';
+  return symbol_to_value(stack_pop(&expression), symbols_with_values) + '0';
 }
