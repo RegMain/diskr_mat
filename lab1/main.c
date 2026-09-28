@@ -39,7 +39,8 @@ int main(int argc, char *argv[]) {
       if (fictive_flag) print_fictive(file, formula);
       fclose(file);
       while (!stack_is_empty(formula)) {
-        stack_pop(&formula);
+        char *to_free = stack_pop(&formula);
+        free(to_free);
       }
     }
   }
