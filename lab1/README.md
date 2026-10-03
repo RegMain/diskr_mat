@@ -23,7 +23,7 @@
 
 **Компиляция**:
 
-`gcc -Wall -Wextra *.c -o truth_table
+`gcc -Wall -Wextra *.c -o truth_table`
 
 **Пример использования**:
 
