@@ -1,4 +1,4 @@
-#pragma once
+#include "zhegalkin.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -12,6 +12,7 @@ void zhegalkin_polynomial(char* table_of_truth, int symbols_cnt, char *symbols) 
     flag_none = 0;
   }
   int prev, tmp;
+  // Pascal triangle method
   for (int j = 0; j < strlen(table_of_truth) - 1; ++j) {
     prev = 0;
     for (int i = strlen(table_of_truth) - 1 - j; i >= 0; --i) {

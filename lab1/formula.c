@@ -1,10 +1,9 @@
-#pragma once
-
+#include "formula.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include "stack.c"
+#include "stack.h"
 
 /*
   [!] -> 0

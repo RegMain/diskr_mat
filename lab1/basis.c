@@ -1,6 +1,8 @@
 #pragma once
-#include "formula.c"
+#include "basis.h"
+#include "formula.h"
 #include <stdlib.h>
+#include "string.h"
 
 char* format_string(const char *template, const char *A, const char *B) {
   if (!template) {
@@ -164,6 +166,7 @@ void basis_change(stack_t *formula, int basis) {
   stack_t *stack = NULL;
   stack_t *formula_ptr = formula;
   while (formula_ptr != NULL) {
+    // We just change A B + to (A + B) and repeat
     if (is_operator(formula_ptr->value)) {
       char *op1 = NULL;
       char *op2 = NULL;

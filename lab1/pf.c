@@ -1,14 +1,14 @@
-#pragma once
-
+#include "pf.h"
 #include <stdio.h>
-#include <ctype.h>
-#include "formula.c"
+#include "formula.h"
 
-void pdnf(FILE *file, stack_t *formula, int symbols_cnt, char *symbols) {
+void pdnf(stack_t *formula, int symbols_cnt, char *symbols) {
   printf("PDNF: ");
   int first_flag = 1;
   for (int i = 0; i < (1 << symbols_cnt); ++i) {
     if (compute_formula(formula, i, symbols) - '0') {
+      // If value in formula is 1 then we print
+      // Multiplication of values (maybe their negatives)
       if (first_flag) {
         first_flag = 0;
       } else {
@@ -40,12 +40,13 @@ void pdnf(FILE *file, stack_t *formula, int symbols_cnt, char *symbols) {
   printf("\n");
 }
 
-void pcnf(FILE *file, stack_t *formula, int symbols_cnt, char *symbols) {
+void pcnf(stack_t *formula, int symbols_cnt, char *symbols) {
   printf("PCNF: ");
-  rewind(file);
   int first_flag = 1;
   for (int i = 0; i < (1 << symbols_cnt); ++i) {
     if (!(compute_formula(formula, i, symbols) - '0')) {
+      // If value in formula is 0 then we print
+      // Sum of values (or maybe their negatives)
       if (first_flag) {
         first_flag = 0;
       } else {

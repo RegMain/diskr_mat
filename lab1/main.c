@@ -1,11 +1,12 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include "formula.c"
-#include "table.c"
-#include "pf.c"
-#include "fictive.c"
-#include "basis.c"
-#include "zhegalkin.c"
+#include "formula.h"
+#include "table.h"
+#include "pf.h"
+#include "fictive.h"
+#include "basis.h"
+#include "zhegalkin.h"
 
 int main(int argc, char *argv[]) {
   FILE *file;
@@ -41,9 +42,9 @@ int main(int argc, char *argv[]) {
       int symbols_cnt;
       char symbols[26];
       char *table_of_truth = print_table(file, formula, &symbols_cnt, symbols);
-      if (pdnf_flag) pdnf(file, formula, symbols_cnt, symbols);
-      if (pcnf_flag) pcnf(file, formula, symbols_cnt, symbols);
-      if (fictive_flag) print_fictive(file, formula, symbols_cnt, symbols);
+      if (pdnf_flag) pdnf(formula, symbols_cnt, symbols);
+      if (pcnf_flag) pcnf(formula, symbols_cnt, symbols);
+      if (fictive_flag) print_fictive(formula, symbols_cnt, symbols);
       if (diff_basis_flag) {
         for (int i = 0; i < 3; ++i) {
           basis_change(formula, i);

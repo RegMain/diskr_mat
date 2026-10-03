@@ -1,6 +1,7 @@
-#pragma once
-
-#include "formula.c"
+#include "table.h"
+#include "formula.h"
+#include <ctype.h>
+#include <stdlib.h>
 
 char* print_table(FILE *file, stack_t *formula, int *symbols_cnt, char *symbols) {
   char tmp;
