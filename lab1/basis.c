@@ -1,6 +1,8 @@
 #pragma once
-#include "formula.c"
+#include "basis.h"
+#include "formula.h"
 #include <stdlib.h>
+#include "string.h"
 
 char* format_string(const char *template, const char *A, const char *B) {
   if (!template) {
@@ -65,8 +67,6 @@ char *basis_zero(int basis) {
       return "(($A [!+] $A) [!+] (($A [!+] $A) [!+] ($A [!+] $A))";
     case 2:
       return "(($A [!*] ($A [!*] $A)) [!*] ($A [!*] ($A [!*] $A)))";
-    case 3:
-      return "($1 [^] $1)";
   }
 }
 
@@ -78,8 +78,6 @@ char *basis_one(int basis) {
       return "(((($A [!+] $A) [!+] $A)) [!+] ((($A [!+] $A) [!+] $A)))";
     case 2:
       return "($A [!*] ($A [!*] $A))";
-    case 3:
-      return "($1)";
   }
 }
 
@@ -164,37 +162,11 @@ char *basis_to_nand(int opcode, char *op1, char *op2) {
   return result;
 }
 
-char *basis_xor_and(int opcode, char *op1, char *op2) {
-  char *result;
-  switch (opcode) {
-    case 0: // !A = 1 xor A
-      result = format_string("($1 [^] {A})", op2, NULL); break;
-    case 1: // A+B = (A xor B) xor (A and B)
-      result = format_string("(({A} [*] {B}) [^] {A} [^] {B})", op1, op2); break;
-    case 2: // A*B = A * B
-      result = format_string("({A} [*] {B})", op1, op2); break;
-    case 3: // A^B = A xor B
-      result = format_string("({A} [^] {B})", op1, op2); break;
-    case 4: // A=B = not (A xor B)
-      result = format_string("($1 [^] {A} [^] {B})", op1, op2); break;
-    case 5: // A->B = not (A !-> B)
-      result = format_string("((({A} [^] {B}) [*] {A}) [^] $1)", op1, op2); break;
-    case 6: // A!->B = (A xor B) and A
-      result = format_string("(({A} [^] {B}) [*] {A})", op1, op2); break;
-    case 7: // A!+B = not (A nand B)
-      result = format_string("(($1 [^] {A}) [*] ($1 [^] {B}))", op1, op2); break;
-    case 8: // A!*B = not (A and B)
-      result = format_string("($1 [^] ({A} [*] {B}))", op1, op2); break;
-    default:
-      result = NULL;
-  }
-  return result;
-}
-
 void basis_change(stack_t *formula, int basis) {
   stack_t *stack = NULL;
   stack_t *formula_ptr = formula;
   while (formula_ptr != NULL) {
+    // We just change A B + to (A + B) and repeat
     if (is_operator(formula_ptr->value)) {
       char *op1 = NULL;
       char *op2 = NULL;
@@ -207,7 +179,6 @@ void basis_change(stack_t *formula, int basis) {
         case 0: op_res = basis_to_and_or(get_opcode(formula_ptr->value), op1, op2); break;
         case 1: op_res = basis_to_nor(get_opcode(formula_ptr->value), op1, op2); break;
         case 2: op_res = basis_to_nand(get_opcode(formula_ptr->value), op1, op2); break;
-        case 3: op_res = basis_xor_and(get_opcode(formula_ptr->value), op1, op2); break;
       }
       free(op2);
       if (get_opcode(formula_ptr->value)) {

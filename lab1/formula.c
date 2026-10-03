@@ -1,10 +1,9 @@
-#pragma once
-
+#include "formula.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include "stack.c"
+#include "stack.h"
 
 /*
   [!] -> 0
@@ -175,7 +174,7 @@ stack_t* formula_to_postfix(FILE *file) {
   return formula;
 }
 
-int compute_formula(stack_t *formula, int values, char symbols[]) {
+int compute_formula(stack_t *formula, int values, char *symbols) {
   // symbols_with_value[i] = 1 if 'A'+i is in formula and its value is 1
   char symbols_with_values[27];
   strcpy(symbols_with_values, symbols);

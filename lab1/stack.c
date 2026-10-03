@@ -1,13 +1,6 @@
+#include "stack.h"
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
-
-struct stack_node {
-  char *value;
-  struct stack_node *next;
-};
-
-typedef struct stack_node stack_t;
 
 void stack_push(stack_t **stack, char *value) {
   stack_t *ptr;
