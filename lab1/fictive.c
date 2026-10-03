@@ -50,7 +50,7 @@ void print_fictive(FILE *file, stack_t *formula) {
       found_fictive = 1;
     }
   }
-  if (found_fictive) {
+  if (!found_fictive) {
     printf("None");
   }
   printf("\n");

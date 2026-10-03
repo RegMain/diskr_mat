@@ -1,27 +1,28 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 struct stack_node {
-  int value;
+  char *value;
   struct stack_node *next;
 };
 
 typedef struct stack_node stack_t;
 
-void stack_push(stack_t **stack, int value) {
+void stack_push(stack_t **stack, char *value) {
   stack_t *ptr;
   ptr = malloc(sizeof(stack_t));
   if (ptr != NULL) {
-    ptr->value = value;
+    ptr->value = strdup(value);
     ptr->next = *stack;
     *stack = ptr;
   }
 }
 
-int stack_pop(stack_t **stack) {
-  if (!stack || !*stack) return -1;
+char* stack_pop(stack_t **stack) {
+  if (!stack || !*stack) return "";
   stack_t *temp;
-  int pop_value;
+  char *pop_value;
   temp = *stack;
   pop_value = (*stack)->value;
   *stack = (*stack)->next;
@@ -33,7 +34,7 @@ int stack_is_empty(stack_t *stack) {
   return (stack == NULL);
 }
 
-int stack_top(stack_t *stack) {
-  if (stack_is_empty(stack)) return -1;
+char* stack_top(stack_t *stack) {
+  if (stack_is_empty(stack)) return "";
   return (stack->value);
 }
