@@ -2,21 +2,7 @@
 
 #include "formula.c"
 
-void print_fictive(FILE *file, stack_t *formula) {
-  char tmp;
-  char symbols[] = "00000000000000000000000000"; // Is there symbol ABC...Z?
-  short symbols_cnt = 0;
-  while (!feof(file)) { // Searching for variables in formula
-    fscanf(file, "%c", &tmp);
-    if (isalpha(tmp)) {
-      tmp = toupper(tmp);
-      if (symbols[tmp-'A'] == '0') {
-        symbols[tmp-'A'] = '1';
-        symbols_cnt++;
-      }
-    }
-  }
-  rewind(file);
+void print_fictive(FILE *file, stack_t *formula, int symbols_cnt, char *symbols) {
   int found_fictive = 0;
   int is_fictive;
   int cnt = 0, result_with_0, result_with_1;

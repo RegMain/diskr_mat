@@ -5,6 +5,7 @@
 #include "pf.c"
 #include "fictive.c"
 #include "basis.c"
+#include "zhegalkin.c"
 
 int main(int argc, char *argv[]) {
   FILE *file;
@@ -37,16 +38,20 @@ int main(int argc, char *argv[]) {
       printf("File could not be opened\n");
     } else {
       stack_t *formula = formula_to_postfix(file);
-      print_table(file, formula);
-      if (pdnf_flag) pdnf(file, formula);
-      if (pcnf_flag) pcnf(file, formula);
-      if (fictive_flag) print_fictive(file, formula);
+      int symbols_cnt;
+      char symbols[26];
+      char *table_of_truth = print_table(file, formula, &symbols_cnt, symbols);
+      if (pdnf_flag) pdnf(file, formula, symbols_cnt, symbols);
+      if (pcnf_flag) pcnf(file, formula, symbols_cnt, symbols);
+      if (fictive_flag) print_fictive(file, formula, symbols_cnt, symbols);
       if (diff_basis_flag) {
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < 3; ++i) {
           basis_change(formula, i);
         }
+        zhegalkin_polynomial(table_of_truth, symbols_cnt, symbols);
       }
       fclose(file);
+      free(table_of_truth);
       while (!stack_is_empty(formula)) {
         char *to_free = stack_pop(&formula);
         free(to_free);
